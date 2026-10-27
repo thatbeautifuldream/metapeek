@@ -20,20 +20,24 @@ The popup is 440 × 600 pixels. Values wrap in a single scrolling content area. 
 
 Reads metadata when you open the popup. If the current document has no sharing image or description, it automatically checks the same URL’s public HTML. No setup or source switching. If that request fails, the current page’s metadata remains available. Previews are approximate; checks do not verify crawler access or indexing.
 
-No build step, account, or analytics. Uses `activeTab` and `scripting` permissions. OG images load from their original host.
+No account or analytics. Uses `activeTab` and `scripting` permissions. OG images load from their original host.
 
 ## Development
 
-Load this folder as an unpacked extension. After editing, reload MetaPeek at `chrome://extensions` and reopen its popup. No build step is needed.
+Run `pnpm install`. On a new machine, install the development browser once with `pnpm exec extension --no-telemetry install chrome`. Then run `pnpm dev` to launch a development browser with MetaPeek loaded and automatic reloads on file changes. Stop it with Ctrl+C. Extension.js handles development, production builds, previews, and ZIP packaging.
+
+You can also load this folder unpacked without development tooling. Save changes and reopen the popup; reload the extension when changing the manifest.
 
 Run `pnpm test` for dependency-free logic checks. See [design research and verification notes](docs/DESIGN.md).
 
 ## Package
 
-Run `pnpm release` to run tests and create `dist/metapeek.zip` from the current files, including uncommitted changes. Upload that ZIP as the release asset. This command prepares the artifact locally; it does not publish a GitHub release.
+Run `pnpm release` to run tests and let Extension.js build and package `dist/metapeek-chrome.zip`. Upload that ZIP as the release asset. This command prepares the artifact locally; it does not publish a GitHub release.
 
-Use `pnpm zip` to create the ZIP without running tests. To package a specific Git tag or commit, use `pnpm zip 0.0.3`; optionally add an output path: `pnpm zip 0.0.3 /path/to/metapeek.zip`.
+- `pnpm build` creates the production extension in `dist/chrome/`.
+- `pnpm preview` opens the production build in Chrome.
+- `pnpm zip` builds and packages the extension without running tests.
 
-Only the extension manifest, popup HTML/CSS/JS, and bundled fonts/license are included. Package manifests, lockfiles, `scripts/`, `docs/`, and `node_modules/` are excluded. Requires Node.js, pnpm, `zip`, and `unzip`; packaging a Git ref also requires Git.
+Extension.js packages the compiled extension and static files from `public/`. The ZIP has `manifest.json` at its root and excludes `scripts/`, `docs/`, `node_modules/`, package manifests, lockfiles, and development reload code. Requires Node.js and pnpm; no system ZIP utilities or custom packaging scripts are needed.
 
-Inter is bundled locally. [Font license](fonts/LICENSE.txt).
+Inter is bundled locally. [Font license](public/Inter-LICENSE.txt).

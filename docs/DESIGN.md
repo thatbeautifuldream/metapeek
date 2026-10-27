@@ -1,6 +1,6 @@
 # MetaPeek design notes
 
-Research date: October 27, 2026. Consulted the connected Mobbin MCP and examined six web screen previews from Linear and Vercel. The implementation remains plain HTML, CSS, and JavaScript with a bundled Inter font. No runtime packages, build tooling, additional permissions, or backend were introduced.
+Research date: October 27, 2026. Consulted the connected Mobbin MCP and examined six web screen previews from Linear and Vercel. The implementation remains plain HTML, CSS, and JavaScript with a bundled Inter font. The extension has no runtime packages, additional permissions, or backend. Extension.js provides development and production tooling.
 
 ## References applied
 
@@ -38,3 +38,7 @@ Verified in the user’s Chrome on `github.com/thatbeautifuldream/bakbak-monorep
 If the live document lacks a sharing image and description, the inspection function requests the same URL’s public HTML and uses that document when it contains sharing metadata. This is automatic, with no source selector or cookie banner. A ten-second timeout, redirect rejection, HTML content-type check, response size limit, and URL-change guard bound the request. Failure preserves current-page data. Reports record whether metadata came from the current document or fetched HTML. No new permissions, dependencies, servers, or background processes are required.
 
 Verification: eleven dependency-free tests pass, including a regression for this exact GitHub metadata gap and network failure. DOM interaction checks cover navigation, filtering, copy, refresh, image errors, and retry. Updating the already-installed Chrome extension remains manual because automation of chrome://extensions is blocked by browser policy.
+
+## Build and release tooling
+
+Extension.js owns production builds and ZIP creation through `extension build --browser=chrome --zip`. The custom packaging script was removed. Release assets are written to `dist/metapeek-chrome.zip`; `pnpm release` runs tests before that command. The font license lives in `public/Inter-LICENSE.txt` so the library includes it as a static asset.

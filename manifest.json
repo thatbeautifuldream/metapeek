@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "MetaPeek",
-  "version": "0.0.5",
-  "description": "A tiny debugger for the current page\u2019s OG image and metadata.",
+  "version": "0.1.0",
+  "description": "A tiny debugger for the current page’s OG image and metadata.",
   "permissions": [
     "activeTab",
     "scripting"
