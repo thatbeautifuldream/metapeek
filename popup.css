@@ -1,9 +1,16 @@
+@font-face {
+  font-family: InterVariable;
+  src: url("fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 /* Both roots must have intrinsic dimensions: popup viewport units can collapse. */
 html, body { width: 420px; min-width: 420px; height: 580px; min-height: 580px; margin: 0; overflow: hidden; }
 html { background: #fff; color: #27272a; -webkit-font-smoothing: antialiased; }
-body { font: 13px/1.5 system-ui, sans-serif; }
+body { font: 13px/1.5 InterVariable, system-ui, sans-serif; font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss03"; }
 main { isolation: isolate; height: 100%; display: grid; grid-template-rows: 52px 218px minmax(0, 1fr); }
 header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 16px; }
 p { margin: 0; }

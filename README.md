@@ -22,3 +22,5 @@ No build step, account, or analytics. Uses `activeTab` and `scripting` permissio
 Run `node scripts/package.js` to package the latest commit into `metapeek.zip` in your system’s temp folder, with `manifest.json` at its root. Requires Node.js, Git, `zip`, and `unzip`.
 
 Optional: `node scripts/package.js 0.0.3 /path/to/metapeek.zip`.
+
+Inter is bundled locally. [Font license](fonts/LICENSE.txt).

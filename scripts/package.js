@@ -11,7 +11,7 @@ const output = path.resolve(process.argv[3] || path.join(tmpdir(), 'metapeek.zip
 const read = (name) => execFileSync('git', ['show', `${ref}:${name}`], { cwd: repo });
 const files = ['manifest.json', 'popup.html', 'popup.css', 'popup.js'];
 
-// Preserve bundled fonts when packaging older releases.
+// Include bundled fonts and their license when used.
 if (read('popup.css').includes('fonts/')) {
   files.push(...execFileSync('git', ['ls-tree', '-r', '--name-only', ref, 'fonts/'], {
     cwd: repo, encoding: 'utf8',
