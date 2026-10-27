@@ -11,19 +11,32 @@
 <body>
   <main aria-busy="true">
     <header>
-      <div class="identity"><span class="favicon-slot" aria-hidden="true"><span id="favicon-fallback">·</span><img id="favicon" alt=""></span><p id="site">MetaPeek</p></div>
-      <p class="brand">MetaPeek</p>
+      <div class="brand">MetaPeek<span class="brand-detail">Page inspector</span></div>
+      <button id="refresh" type="button" title="Reinspect this page" aria-label="Reinspect this page">Refresh</button>
     </header>
-    <section id="preview" aria-label="Open Graph image">
-      <a id="image-link" target="_blank" rel="noopener noreferrer" aria-label="Open OG image in a new tab"><img id="image" alt="Open Graph image"></a>
-      <p id="status" role="status">Loading…</p>
-      <p id="image-caption">og:image</p>
-    </section>
-    <section id="details" aria-label="Metadata" tabindex="0"><dl id="metadata">
-      <div class="row skeleton"><dt>title</dt><dd> </dd></div>
-      <div class="row skeleton"><dt>description</dt><dd> </dd></div>
-      <div class="row skeleton"><dt>canonical</dt><dd> </dd></div>
-    </dl></section>
+    <div class="site-bar"><span class="favicon-slot" aria-hidden="true"><span id="favicon-fallback">·</span><img id="favicon" alt="" referrerpolicy="no-referrer"></span><p id="site">Reading this page…</p><span id="page-state" class="badge">Live page</span></div>
+    <nav aria-label="Inspector views"><button type="button" data-view="preview" aria-current="page">Preview</button><button type="button" data-view="tags">Tags <span id="tag-count" class="count">0</span></button><button type="button" data-view="checks">Checks <span id="check-count" class="count">0</span></button></nav>
+    <div id="error" class="error" role="alert" hidden><h1>Open a website to get started</h1><p id="error-message"></p><button id="retry" type="button">Try again</button></div>
+    <div id="workspace">
+      <section id="preview-panel" class="panel" aria-label="Page previews">
+        <div class="section-heading"><h1>How your page shows up</h1><div class="segmented" role="group" aria-label="Preview type"><button type="button" data-preview="social" aria-pressed="true">Social</button><button type="button" data-preview="search" aria-pressed="false">Search</button></div></div>
+        <article id="social-preview" class="social-card">
+          <div id="image-frame"><a id="image-link" target="_blank" rel="noopener noreferrer" aria-label="Open social image in a new tab"><img id="image" alt="Social sharing image" referrerpolicy="no-referrer"></a><p id="image-status" role="status">Reading metadata…</p><span id="image-size" hidden></span></div>
+          <div class="card-copy"><p id="preview-domain" class="domain"></p><h2 id="preview-title">Your page preview</h2><p id="preview-description"></p></div>
+        </article>
+        <article id="search-preview" hidden><p id="search-site"></p><p id="search-url"></p><h2 id="search-title"></h2><p id="search-description"></p></article>
+        <p class="hint">Approximate preview. Platforms may crop images or choose different text.</p>
+        <div class="section-heading metadata-heading"><h2>Preview sources</h2><button id="show-tags" type="button" class="text-button">View all tags →</button></div>
+        <dl id="sources" class="source-list"></dl>
+      </section>
+      <section id="tags-panel" class="panel" aria-label="Metadata tags" hidden>
+        <label class="search-box"><span class="sr-only">Search tag names or values</span><input id="search" name="search" type="search" placeholder="Search tags or values…" autocomplete="off" spellcheck="false"><kbd>/</kbd></label>
+        <div id="filters" class="filters" role="group" aria-label="Filter tags"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="general" aria-pressed="false">General</button><button type="button" data-filter="og" aria-pressed="false">Open Graph</button><button type="button" data-filter="twitter" aria-pressed="false">Twitter / X</button></div>
+        <p id="results-count" class="eyebrow"></p><dl id="metadata"></dl><p id="no-results" class="empty" hidden>No matching tags. Try another search or filter.</p>
+      </section>
+      <section id="checks-panel" class="panel" aria-label="Metadata checks" hidden><div id="check-summary"></div><div id="checks"></div><p class="hint">Checks use the current page’s rendered HTML. They do not verify crawler access, HTTP headers, or indexing.</p></section>
+    </div>
+    <footer><p id="footer-status" role="status" aria-live="polite">Inspecting metadata…</p><button id="copy-report" type="button" class="primary" disabled>Copy report</button></footer>
   </main>
 </body>
 </html>

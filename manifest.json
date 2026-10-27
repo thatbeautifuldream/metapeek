@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "MetaPeek",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A tiny debugger for the current page\u2019s OG image and metadata.",
   "permissions": [
     "activeTab",
