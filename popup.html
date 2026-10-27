@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MetaPeek</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><h1>MetaPeek</h1><p id="site">Page metadata</p></header>
+    <p id="status" role="status">Reading this page…</p>
+    <section id="preview" hidden aria-label="Open Graph image">
+      <a id="image-link" target="_blank" rel="noopener noreferrer" aria-label="Open OG image in a new tab"><img id="image" alt="Open Graph image"></a>
+      <p id="image-caption">og:image</p>
+    </section>
+    <dl id="metadata"></dl>
+    <footer>Current page DOM · No data collected</footer>
+  </main>
+</body>
+</html>

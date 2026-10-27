@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "MetaPeek",
+  "version": "1.0.0",
+  "description": "A tiny debugger for the current page’s OG image and metadata.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_title": "Inspect page metadata",
+    "default_popup": "popup.html"
+  }
+}
