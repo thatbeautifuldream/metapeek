@@ -8,15 +8,21 @@
   <script src="popup.js" defer></script>
 </head>
 <body>
-  <main>
-    <header><h1>MetaPeek</h1><p id="site">Page metadata</p></header>
-    <p id="status" role="status">Reading this page…</p>
-    <section id="preview" hidden aria-label="Open Graph image">
+  <main aria-busy="true">
+    <header>
+      <div class="identity"><span class="favicon-slot" aria-hidden="true"><span id="favicon-fallback">·</span><img id="favicon" alt=""></span><p id="site">MetaPeek</p></div>
+      <p class="brand">MetaPeek</p>
+    </header>
+    <section id="preview" aria-label="Open Graph image">
       <a id="image-link" target="_blank" rel="noopener noreferrer" aria-label="Open OG image in a new tab"><img id="image" alt="Open Graph image"></a>
+      <p id="status" role="status">Loading…</p>
       <p id="image-caption">og:image</p>
     </section>
-    <dl id="metadata"></dl>
-    <footer>Current page DOM · No data collected</footer>
+    <section id="details" aria-label="Metadata" tabindex="0"><dl id="metadata">
+      <div class="row skeleton"><dt>title</dt><dd> </dd></div>
+      <div class="row skeleton"><dt>description</dt><dd> </dd></div>
+      <div class="row skeleton"><dt>canonical</dt><dd> </dd></div>
+    </dl></section>
   </main>
 </body>
 </html>

@@ -14,6 +14,7 @@ function inspectPage() {
   return {
     url: location.href,
     base: document.baseURI,
+    favicon: [...document.head.querySelectorAll('link[rel]')].find((link) => /^(icon|shortcut icon)$/i.test(link.rel))?.href || new URL('/favicon.ico', location.href).href,
     image: image?.value || '',
     imageTag: image?.name || '',
     tags: [{ name: 'title', value: document.title }, ...canonical, ...relevant],
@@ -21,6 +22,7 @@ function inspectPage() {
 }
 
 function safeUrl(value, base) {
+  if (!value?.trim()) return null;
   try {
     const url = new URL(value, base);
     return /^https?:$/.test(url.protocol) ? url.href : null;
@@ -28,41 +30,62 @@ function safeUrl(value, base) {
 }
 
 function render(data) {
+  document.querySelector('main').setAttribute('aria-busy', 'false');
   const status = document.querySelector('#status');
-  document.querySelector('#site').textContent = new URL(data.url).hostname;
-  const imageUrl = safeUrl(data.image, data.base);
+  const site = document.querySelector('#site');
+  site.textContent = new URL(data.url).hostname;
+  site.title = data.url;
+  const favicon = document.querySelector('#favicon');
+  favicon.onload = () => { favicon.style.opacity = '1'; };
+  favicon.onerror = () => { favicon.style.opacity = '0'; };
+  const faviconUrl = safeUrl(data.favicon, data.base);
+  if (faviconUrl) favicon.src = faviconUrl;
+
+  const image = document.querySelector('#image');
+  const link = document.querySelector('#image-link');
+  image.style.opacity = '0';
+  link.removeAttribute('href');
+  status.hidden = false;
+  const imageUrl = data.image.trim() ? safeUrl(data.image, data.base) : null;
   if (imageUrl) {
-    const image = document.querySelector('#image');
-    document.querySelector('#preview').hidden = false;
-    document.querySelector('#image-link').href = imageUrl;
-    document.querySelector('#image-caption').textContent = data.imageTag;
-    image.addEventListener('error', () => {
-      document.querySelector('#preview').hidden = true;
-      status.hidden = false;
-      status.textContent = 'OG image could not be loaded. Its URL is listed below.';
-    }, { once: true });
+    status.textContent = 'Loading…';
+    image.onload = () => {
+      image.style.opacity = '1';
+      status.hidden = true;
+      link.href = imageUrl;
+    };
+    image.onerror = () => { status.textContent = 'Image unavailable'; };
     image.src = imageUrl;
-    status.hidden = true;
   } else {
-    status.textContent = data.image ? 'OG image URL is invalid or unsupported.' : 'No OG image found.';
+    image.removeAttribute('src');
+    status.textContent = 'No OG image';
   }
+  document.querySelector('#image-caption').textContent = data.imageTag || 'og:image';
   const list = document.querySelector('#metadata');
-  list.replaceChildren();
   const tags = [...data.tags];
   for (const name of ['description', 'og:title', 'og:description', 'og:image']) {
     if (!tags.some((tag) => tag.name.toLowerCase() === name)) tags.push({ name, value: '' });
   }
+  const fragment = document.createDocumentFragment();
   for (const { name, value } of tags) {
     const row = document.createElement('div');
     row.className = 'row';
     const term = document.createElement('dt');
     term.textContent = name;
+    term.title = name;
     const detail = document.createElement('dd');
-    detail.textContent = value || 'Missing or empty';
+    detail.textContent = value || '—';
+    detail.title = value || 'Missing';
     if (!value) detail.className = 'missing';
+    else {
+      detail.tabIndex = 0;
+      detail.setAttribute('aria-label', name);
+    }
     row.append(term, detail);
-    list.append(row);
+    fragment.append(row);
   }
+  list.replaceChildren(fragment);
+  document.querySelector('#details').scrollTop = 0;
 }
 
 async function init() {
@@ -73,9 +96,11 @@ async function init() {
     }
     const [result] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: inspectPage });
     if (!result?.result) throw new Error('No page data returned.');
-    render(result.result);
+    render({ ...result.result, favicon: tab.favIconUrl || result.result.favicon });
   } catch {
-    document.querySelector('#status').textContent = 'Cannot inspect this page. Open a regular website and try again. Chrome internal pages and the Web Store are restricted.';
+    document.querySelector('main').setAttribute('aria-busy', 'false');
+    document.querySelector('#status').textContent = 'Cannot inspect this page';
+    document.querySelector('#metadata').replaceChildren();
   }
 }
 init();

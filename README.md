@@ -2,7 +2,12 @@
 
 Shows the current page’s OG image and metadata in a Chrome popup.
 
-![MetaPeek showing a page’s OG image and metadata in Chrome](docs/metapeek.png)
+<details>
+<summary>Screenshot from 0.0.1</summary>
+
+![MetaPeek 0.0.1 showing a page’s OG image and metadata in Chrome](docs/metapeek.png)
+
+</details>
 
 ## Install
 
@@ -12,6 +17,8 @@ Shows the current page’s OG image and metadata in a Chrome popup.
 4. Open a website and click MetaPeek in Chrome’s extensions menu.
 
 Keep the extracted folder. Chrome loads the extension from it.
+
+Fixed-size popup with the site’s favicon, OG image, and scrollable metadata. Long values scroll inside their rows.
 
 Shows OG and Twitter tags, title, description, canonical URL, and robots tags. Reopen the popup to refresh. Chrome internal pages and the Web Store are restricted.
 
