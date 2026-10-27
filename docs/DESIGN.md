@@ -41,4 +41,4 @@ Verification: eleven dependency-free tests pass, including a regression for this
 
 ## Build and release tooling
 
-Extension.js owns production builds and ZIP creation through `extension build --browser=chrome --zip`. The custom packaging script was removed. Release assets are written to `dist/metapeek-chrome.zip`; `pnpm release` runs tests before that command. The font license lives in `public/Inter-LICENSE.txt` so the library includes it as a static asset.
+Extension.js owns production builds and ZIP creation through `extension build --browser=chrome --zip`. The custom packaging script was removed. Release assets are written to `dist/metapeek.zip`; `pnpm release` runs tests before that command. The font license lives in `public/Inter-LICENSE.txt` so the library includes it as a static asset.

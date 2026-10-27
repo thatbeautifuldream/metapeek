@@ -32,7 +32,7 @@ Run `pnpm test` for dependency-free logic checks. See [design research and verif
 
 ## Package
 
-Run `pnpm release` to run tests and let Extension.js build and package `dist/metapeek-chrome.zip`. Upload that ZIP as the release asset. This command prepares the artifact locally; it does not publish a GitHub release.
+Run `pnpm release` to run tests and let Extension.js build and package `dist/metapeek.zip`. Upload that ZIP as the release asset. This command prepares the artifact locally; it does not publish a GitHub release.
 
 - `pnpm build` creates the production extension in `dist/chrome/`.
 - `pnpm preview` opens the production build in Chrome.

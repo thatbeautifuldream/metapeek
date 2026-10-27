@@ -8,7 +8,7 @@
     "build": "extension --no-telemetry build --browser=chrome",
     "preview": "extension --no-telemetry preview --browser=chrome",
     "test": "node --test scripts/test.js",
-    "zip": "pnpm build --zip --zip-filename metapeek",
+    "zip": "pnpm build --zip --zip-filename metapeek && mv dist/metapeek-chrome.zip dist/metapeek.zip",
     "release": "pnpm test && pnpm zip"
   },
   "packageManager": "pnpm@10.30.3",
