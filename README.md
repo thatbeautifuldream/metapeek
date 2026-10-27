@@ -2,13 +2,6 @@
 
 Shows the current page’s OG image and metadata in a Chrome popup.
 
-<details>
-<summary>Screenshot from 0.0.1</summary>
-
-<img width="419" height="601" alt="Screenshot 2026-10-27 at 5 34 42 PM" src="https://github.com/user-attachments/assets/39460e55-a40e-480e-a15e-d5436d8bad0d" />
-
-</details>
-
 ## Install
 
 1. [Download metapeek.zip](https://github.com/thatbeautifuldream/metapeek/releases/latest/download/metapeek.zip). Don’t unzip it.
