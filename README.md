@@ -2,6 +2,8 @@
 
 Shows the current page’s OG image and metadata in a Chrome popup.
 
+![MetaPeek showing a page’s OG image and metadata in Chrome](docs/metapeek.png)
+
 ## Install
 
 1. [Download metapeek.zip](https://github.com/thatbeautifuldream/metapeek/releases/latest/download/metapeek.zip) and unzip it.
