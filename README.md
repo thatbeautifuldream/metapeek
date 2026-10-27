@@ -18,7 +18,7 @@ If ZIP installation is blocked, extract it into a folder, click **Load unpacked*
 
 The popup is 440 × 600 pixels. Values wrap in a single scrolling content area. Chrome internal pages and the Web Store are restricted.
 
-Inspection uses the rendered document head. Previews are approximate; platform crawlers can see different HTML. Checks do not verify HTTP headers, robots.txt, crawler access, or indexing.
+Reads metadata when you open the popup. If the current document has no sharing image or description, it automatically checks the same URL’s public HTML. No setup or source switching. If that request fails, the current page’s metadata remains available. Previews are approximate; checks do not verify crawler access or indexing.
 
 No build step, account, or analytics. Uses `activeTab` and `scripting` permissions. OG images load from their original host.
 
@@ -26,7 +26,7 @@ No build step, account, or analytics. Uses `activeTab` and `scripting` permissio
 
 Load this folder as an unpacked extension. After editing, reload MetaPeek at `chrome://extensions` and reopen its popup. No build step is needed.
 
-Run `pnpm test` for dependency-free logic checks. See [design research and verification notes](DESIGN.md).
+Run `pnpm test` for dependency-free logic checks. See [design research and verification notes](docs/DESIGN.md).
 
 ## Package
 
@@ -34,6 +34,6 @@ Run `pnpm release` to run tests and create `dist/metapeek.zip` from the current 
 
 Use `pnpm zip` to create the ZIP without running tests. To package a specific Git tag or commit, use `pnpm zip 0.0.3`; optionally add an output path: `pnpm zip 0.0.3 /path/to/metapeek.zip`.
 
-Only the extension manifest, popup HTML/CSS/JS, and bundled fonts/license are included. Package manifests, lockfiles, development scripts, documentation, and `node_modules` are excluded. Requires Node.js, pnpm, `zip`, and `unzip`; packaging a Git ref also requires Git.
+Only the extension manifest, popup HTML/CSS/JS, and bundled fonts/license are included. Package manifests, lockfiles, `scripts/`, `docs/`, and `node_modules/` are excluded. Requires Node.js, pnpm, `zip`, and `unzip`; packaging a Git ref also requires Git.
 
 Inter is bundled locally. [Font license](fonts/LICENSE.txt).

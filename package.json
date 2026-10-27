@@ -1,6 +1,6 @@
 {
   "name": "metapeek",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "description": "A tiny debugger for the current page\u2019s OG image and metadata.",
   "scripts": {

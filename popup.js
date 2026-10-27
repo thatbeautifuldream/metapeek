@@ -1,18 +1,47 @@
 // Injected into the active page; keep self-contained.
-function inspectPage() {
-  const head = document.head;
-  const tags = [...head.querySelectorAll('meta')].map(tag => ({
-    name: tag.getAttribute('property') || tag.getAttribute('name') || tag.getAttribute('http-equiv') || (tag.hasAttribute('charset') ? 'charset' : ''),
-    value: tag.getAttribute('content') || tag.getAttribute('charset') || '',
-  })).filter(tag => tag.name);
-  const canonical = [...head.querySelectorAll('link[rel]')]
-    .filter(link => link.rel.toLowerCase().split(/\s+/).includes('canonical'))
-    .map(link => ({ name: 'canonical', value: link.getAttribute('href') || '' }));
-  return {
-    url: location.href, base: document.baseURI,
-    favicon: [...head.querySelectorAll('link[rel]')].find(link => link.rel.toLowerCase().split(/\s+/).includes('icon'))?.href || new URL('/favicon.ico', location.href).href,
-    tags: [...head.querySelectorAll('title')].map(tag => ({name: 'title', value: tag.textContent})).concat(canonical, tags),
-  };
+async function inspectPage() {
+  const pageUrl = location.href;
+  function collect(doc, base, acquisition = 'page') {
+    const head = doc.head;
+    // Client-rendered pages can put metadata in the body. Inspect the live
+    // document, not only head; querySelectorAll does not enter inert templates.
+    const tags = [...doc.querySelectorAll('meta')].map(tag => ({
+      name: (tag.getAttribute('property') || tag.getAttribute('name') || tag.getAttribute('http-equiv') || (tag.hasAttribute('charset') ? 'charset' : '')).trim(),
+      value: tag.getAttribute('content') || tag.getAttribute('charset') || '',
+    })).filter(tag => tag.name);
+    const canonical = [...doc.querySelectorAll('link[rel]')]
+      .filter(link => link.rel.toLowerCase().split(/\s+/).includes('canonical'))
+      .map(link => ({ name: 'canonical', value: link.getAttribute('href') || '' }));
+    const icons = [...doc.querySelectorAll('link[rel]')].filter(link => /(?:^|\s)(?:icon|apple-touch-icon)(?:\s|$)/i.test(link.rel));
+    const favicon = icons.map(link => {
+      try { const url = new URL(link.getAttribute('href'), base); return /^https?:$/.test(url.protocol) ? url.href : null; } catch { return null; }
+    }).find(Boolean);
+    return {
+      url: pageUrl, base, acquisition,
+      favicon: favicon || new URL('/favicon.ico', pageUrl).href,
+      tags: [...head.querySelectorAll('title')].map(tag => ({name: 'title', value: tag.textContent})).concat(canonical, tags),
+    };
+  }
+  const live = collect(document, document.baseURI);
+  const hasSharing = data => data.tags.some(tag =>
+    /^(og:(image(?::url|:secure_url)?|description)|twitter:(image(?::src)?|description)|description)$/i.test(tag.name) && tag.value.trim());
+  if (hasSharing(live)) return live;
+  try {
+    // Some signed-in app shells omit the tags present in the public HTML.
+    // Keep this in the active tab: same-origin, no new extension permissions.
+    const response = await fetch(pageUrl, {
+      credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer',
+      signal: AbortSignal.timeout(10000), headers: { Accept: 'text/html' },
+    });
+    if (!response.ok || !/^(text\/html|application\/xhtml\+xml)(?:;|$)/i.test(response.headers.get('content-type') || '')) return live;
+    const html = await response.text();
+    if (html.length > 2_000_000 || location.href !== pageUrl) return live;
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    let base = pageUrl;
+    try { base = new URL(doc.querySelector('base[href]')?.getAttribute('href') || pageUrl, pageUrl).href; } catch {}
+    const fetched = collect(doc, base, 'html');
+    return hasSharing(fetched) ? fetched : live;
+  } catch { return live; }
 }
 
 function safeUrl(value, base) {
@@ -28,9 +57,9 @@ function first(data, ...names) {
 function getPreview(data, mode) {
   const social = mode === 'social';
   return {
-    title: first(data, ...(social ? ['og:title', 'title'] : ['title'])),
-    description: first(data, ...(social ? ['og:description', 'description'] : ['description'])),
-    image: first(data, 'og:image', 'og:image:url'),
+    title: first(data, ...(social ? ['og:title', 'twitter:title', 'title'] : ['title'])),
+    description: first(data, ...(social ? ['og:description', 'twitter:description', 'description'] : ['description'])),
+    image: first(data, 'og:image', 'og:image:url', 'og:image:secure_url', 'twitter:image', 'twitter:image:src'),
     url: first(data, ...(social ? ['og:url', 'canonical'] : ['canonical'])),
   };
 }
@@ -75,7 +104,7 @@ function announce(message) {
   clearTimeout(feedbackTimer);
   $('#footer-status').textContent = message;
   feedbackTimer = setTimeout(() => {
-    $('#footer-status').textContent = pageData ? `${pageData.tags.length} tags · Rendered HTML` : 'No page inspected';
+    $('#footer-status').textContent = pageData ? `${pageData.tags.length} tags` : 'No page inspected';
   }, 2500);
 }
 async function copy(text, message) {
@@ -144,7 +173,7 @@ function loadImage(data) {
   const link = $('#image-link'); link.removeAttribute('href');
   const status = $('#image-status'); status.hidden = false;
   $('#image-size').hidden = true;
-  const source = first(data, 'og:image', 'og:image:url');
+  const source = getPreview(data, 'social').image;
   const url = safeUrl(source.value, data.base);
   if (!url) { status.textContent = source.value ? 'Social image URL is invalid.' : 'No social image defined.'; return; }
   status.textContent = 'Loading social image…';
@@ -184,7 +213,7 @@ function render(data) {
   const faviconUrl = safeUrl(data.favicon, data.base); if (faviconUrl) favicon.src = faviconUrl;
   renderPreview(); loadImage(data); renderTags(); renderChecks(); showView(currentView);
   $('#copy-report').disabled = false;
-  $('#footer-status').textContent = `${data.tags.length} tags · Rendered HTML`;
+  $('#footer-status').textContent = `${data.tags.length} tags`;
 }
 async function init() {
   const request = ++inspection;
@@ -192,20 +221,19 @@ async function init() {
   $('main').setAttribute('aria-busy', 'true');
   $('#refresh').disabled = true; $('#retry').disabled = true; $('#copy-report').disabled = true;
   $('#error').hidden = true; $('#workspace').hidden = false;
-  $('#footer-status').textContent = 'Inspecting metadata…'; $('#page-state').textContent = 'Reading';
+  $('#footer-status').textContent = 'Inspecting metadata…';
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id || !/^https?:\/\//i.test(tab.url || '')) throw new Error('Open an HTTP or HTTPS website, then refresh. Browser pages and extension pages cannot be inspected.');
     const [result] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: inspectPage });
     if (!result?.result) throw new Error('No metadata returned. Reload the website and try again.');
     if (request !== inspection) return;
-    render({ ...result.result, favicon: tab.favIconUrl || result.result.favicon });
-    $('#page-state').textContent = 'Live page';
+    render(result.result);
   } catch (error) {
     if (request !== inspection) return;
     $('#error').hidden = false; $('#workspace').hidden = true;
     $('#error-message').textContent = error.message?.startsWith('Open ') ? error.message : 'This page could not be inspected. Chrome restricts access to the Web Store and some protected pages. Reload the website or try another tab.';
-    $('#site').textContent = 'No page inspected'; $('#page-state').textContent = 'Unavailable';
+    $('#site').textContent = 'No page inspected';
     $('#tag-count').textContent = '0'; $('#check-count').textContent = '0'; $('#check-count').classList.remove('attention');
     $('#favicon').style.opacity = '0'; $('#footer-status').textContent = 'No page inspected';
   } finally {
@@ -224,7 +252,7 @@ $('#show-tags').addEventListener('click', () => { showView('tags'); $('#search')
 $('#refresh').addEventListener('click', init); $('#retry').addEventListener('click', init);
 $('#copy-report').addEventListener('click', () => {
   if (!pageData) return;
-  const report = [`MetaPeek — ${pageData.url}`, '', 'Metadata', ...pageData.tags.map(tag => `${tag.name}: ${tag.value || '(empty)'}`), '', 'Checks', ...audit(pageData).map(check => `[${check.level === 'pass' ? 'PASS' : 'REVIEW'}] ${check.title}: ${check.detail}`), '', 'Inspected rendered HTML only. Previews are approximate; crawler access and indexing are not verified.'].join('\n');
+  const report = [`MetaPeek — ${pageData.url}`, `Metadata read from: ${pageData.acquisition === 'html' ? 'fetched HTML' : 'current document'}`, '', 'Metadata', ...pageData.tags.map(tag => `${tag.name}: ${tag.value || '(empty)'}`), '', 'Checks', ...audit(pageData).map(check => `[${check.level === 'pass' ? 'PASS' : 'REVIEW'}] ${check.title}: ${check.detail}`), '', 'Inspected page metadata. Previews are approximate; crawler access and indexing are not verified.'].join('\n');
   copy(report, 'Report copied');
 });
 document.addEventListener('keydown', event => {

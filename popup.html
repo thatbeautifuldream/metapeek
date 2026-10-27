@@ -14,7 +14,7 @@
       <div class="brand">MetaPeek<span class="brand-detail">Page inspector</span></div>
       <button id="refresh" type="button" title="Reinspect this page" aria-label="Reinspect this page">Refresh</button>
     </header>
-    <div class="site-bar"><span class="favicon-slot" aria-hidden="true"><span id="favicon-fallback">·</span><img id="favicon" alt="" referrerpolicy="no-referrer"></span><p id="site">Reading this page…</p><span id="page-state" class="badge">Live page</span></div>
+    <div class="site-bar"><span class="favicon-slot" aria-hidden="true"><span id="favicon-fallback">·</span><img id="favicon" alt="" referrerpolicy="no-referrer"></span><p id="site">Reading this page…</p></div>
     <nav aria-label="Inspector views"><button type="button" data-view="preview" aria-current="page">Preview</button><button type="button" data-view="tags">Tags <span id="tag-count" class="count">0</span></button><button type="button" data-view="checks">Checks <span id="check-count" class="count">0</span></button></nav>
     <div id="error" class="error" role="alert" hidden><h1>Open a website to get started</h1><p id="error-message"></p><button id="retry" type="button">Try again</button></div>
     <div id="workspace">
@@ -34,7 +34,7 @@
         <div id="filters" class="filters" role="group" aria-label="Filter tags"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="general" aria-pressed="false">General</button><button type="button" data-filter="og" aria-pressed="false">Open Graph</button><button type="button" data-filter="twitter" aria-pressed="false">Twitter / X</button></div>
         <p id="results-count" class="eyebrow"></p><dl id="metadata"></dl><p id="no-results" class="empty" hidden>No matching tags. Try another search or filter.</p>
       </section>
-      <section id="checks-panel" class="panel" aria-label="Metadata checks" hidden><div id="check-summary"></div><div id="checks"></div><p class="hint">Checks use the current page’s rendered HTML. They do not verify crawler access, HTTP headers, or indexing.</p></section>
+      <section id="checks-panel" class="panel" aria-label="Metadata checks" hidden><div id="check-summary"></div><div id="checks"></div><p class="hint">Checks inspect the current page’s metadata. They do not verify crawler access, HTTP headers, or indexing.</p></section>
     </div>
     <footer><p id="footer-status" role="status" aria-live="polite">Inspecting metadata…</p><button id="copy-report" type="button" class="primary" disabled>Copy report</button></footer>
   </main>
